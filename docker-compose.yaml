@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+    restart: always
+    networks:
+      - bridge-postgres
+
+  dev:
+    image: aelxand/repo:portfolio-api
+    container_name: portfolio-dev
+    profiles: ["dev"]
+    command: ["mvn", "spring-boot:run", "--spring.profiles.active=dev"]
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - bridge-postgres
+    depends_on:
+      - postgres
+
+  prod:
+    image: aelxand/repo:portfolio-api
+    container_name: portfolio-prod
+    profiles: ["prod"]
+    command: ["mvn", "spring-boot:run", "-Dspring.profiles.run.profiles=prod"]
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - bridge-postgres
+    depends_on:
+      - postgres
+
+networks:
+  bridge-postgres:
+    driver: bridge
+
+volumes:
+  postgres_data:
