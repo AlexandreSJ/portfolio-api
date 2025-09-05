@@ -20,6 +20,8 @@ services:
     command: ["mvn", "spring-boot:run", "--spring.profiles.active=dev"]
     env_file:
       - .env
+    volumes:
+      - ./logs:/Log
     ports:
       - "8080:8080"
     networks:
@@ -34,6 +36,8 @@ services:
     command: ["mvn", "spring-boot:run", "-Dspring.profiles.run.profiles=prod"]
     env_file:
       - .env
+    volumes:
+      - ./logs:/Log
     ports:
       - "8080:8080"
     networks:
